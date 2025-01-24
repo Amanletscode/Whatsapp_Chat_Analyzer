@@ -92,7 +92,6 @@ if uploaded_file is not None:
                     st.markdown('<div class="sub-header">User Contribution Table</div>', unsafe_allow_html=True)
                     st.dataframe(busy_users_df)
 
-
             st.markdown('<div class="horizontal-line"></div>', unsafe_allow_html=True)
 
         # **Section: Timeline Analysis**
@@ -125,10 +124,8 @@ if uploaded_file is not None:
             st.markdown('<div class="sub-header">Daily Activity</div>', unsafe_allow_html=True)
             st.dataframe(daily_timeline_df.rename(columns={"date": "Date", "message_count": "Message Count"}))
 
-
         # Add a partition line
         st.markdown('<div class="horizontal-line"></div>', unsafe_allow_html=True)
-
 
         # **Section: Activity Analysis**
         st.markdown('<div class="section-header">Activity Analysis</div>', unsafe_allow_html=True)
@@ -146,7 +143,6 @@ if uploaded_file is not None:
         # Add a partition line
         st.markdown('<div class="horizontal-line"></div>', unsafe_allow_html=True)
 
-        
         # **Heatmap Section**
         st.markdown('<div class="section-header">Heatmap Analysis</div>', unsafe_allow_html=True)
         st.markdown('<div class="sub-header" style="text-align: left;">Message Activity Heatmap</div>', unsafe_allow_html=True)
@@ -158,44 +154,6 @@ if uploaded_file is not None:
         st.pyplot(fig_heatmap)
 
         # Add a partition line
-        st.markdown('<div class="horizontal-line"></div>', unsafe_allow_html=True)
-
-        # **Section: Word Cloud**
-        st.markdown('<div class="section-header">Word Cloud</div>', unsafe_allow_html=True)
-        wordcloud = helper.generate_wordcloud(selected_user, df)
-
-        if wordcloud is None and num_messages > 0:
-            st.markdown(f"Only one message found: '{filtered_df.iloc[0]['message_content']}'")
-        elif wordcloud is None:
-            st.markdown("No messages found to generate a word cloud.")
-        else:
-            fig, ax = plt.subplots(figsize=(5, 3))
-            ax.imshow(wordcloud, interpolation="bilinear")
-            ax.axis("off")
-            st.pyplot(fig)
-
-        st.markdown('<div class="horizontal-line"></div>', unsafe_allow_html=True)
-
-        # **Section: Most Common Words**
-        # Generate chart and DataFrame for most common words
-        fig_common_words, common_words_df = helper.plot_most_common_words_interactive(
-            selected_user, df, n=10, dynamic_threshold=exclude_common_words / 100
-        )
-
-        col1, col2 = st.columns([2, 1])
-        with col1:
-            if fig_common_words:
-                st.markdown('<div class="sub-header">Top 10 Most Common Words</div>', unsafe_allow_html=True)
-                st.plotly_chart(fig_common_words, use_container_width=True)
-            else:
-                st.markdown("No significant words found after filtering.")
-        with col2:
-            if not common_words_df.empty:
-                st.markdown('<div class="sub-header">Word Frequency Table</div>', unsafe_allow_html=True)
-                st.dataframe(common_words_df)
-
-
-        # Add partition line
         st.markdown('<div class="horizontal-line"></div>', unsafe_allow_html=True)
 
         # **Section: Emoji Analysis**

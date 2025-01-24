@@ -1,8 +1,6 @@
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import plotly.express as px
-from wordcloud import WordCloud
 from collections import Counter
 import emoji
 
@@ -67,121 +65,6 @@ def get_user_contribution(df):
     return contribution
 
 
-def generate_wordcloud(selected_user, df):
-    """
-    Generate a word cloud of the most common words.
-    Handles cases where no words are available.
-    """
-    if selected_user != "Overall":
-        df = df[df['user'] == selected_user]
-
-    all_words = " ".join(
-        message for message in df['message_content'] if "Media omitted" not in message
-    )
-
-    if not all_words.strip():  # Check if there are no words to process
-        return None
-
-    wordcloud = WordCloud(
-        width=800,
-        height=400,
-        background_color="white",
-        stopwords=set(WordCloud().stopwords),
-        colormap="viridis",
-        max_words=100
-    ).generate(all_words)
-
-    return wordcloud
-
-
-def identify_dynamic_stopwords(df, threshold=0.01):
-    """
-    Identify stopwords dynamically based on their frequency in the dataset.
-    Words that occur more frequently than the threshold are treated as stopwords.
-    """
-    all_messages = " ".join(df['message_content'].str.lower())
-    words = all_messages.split()
-    word_counts = Counter(words)
-
-    total_words = sum(word_counts.values())
-    frequent_words = {
-        word for word, count in word_counts.items()
-        if count / total_words > threshold
-    }
-    return frequent_words
-
-
-def remove_stopwords(messages, dynamic_stopwords=None):
-    """
-    Remove both default stopwords and dynamically identified stopwords from messages.
-    """
-    stop_words = set([
-        'the', 'to', 'and', 'of', 'in', 'for', 'on', 'is', 'it', 'this', 'with', 
-        'as', 'was', 'that', 'by', 'at', 'an', 'be', 'have', 'are', 'not', 
-        'but', 'or', 'from', 'we', 'they', 'a', 'you', 'i', 'he', 'she', 
-        'so', 'has', 'do', 'if', 'my', 'me', 'how', 'toh', 'nhi', 'hai', 'na', 
-        'ha', 'ki', 'mein', 'ka', 'ke', 'ho', 'tha', 'bhi', 'kr', 'ye', 'se', 
-        'wo', 'ab', 'kya', 'kar', 'jo', 'tum', 'hum', 'yeh', 'un', 'us', 
-        'hoon', 'hua', 'kuch', 'sab', 'aa', 'le', 'pe', 'upar'
-    ])
-
-    if dynamic_stopwords:
-        stop_words.update(dynamic_stopwords)
-
-    words = []
-    for message in messages:
-        tokens = message.lower().split()
-        for token in tokens:
-            if token not in stop_words and len(token) > 1:
-                words.append(token)
-    return words
-
-
-def most_common_words(selected_user, df, n=10, dynamic_threshold=0.01):
-    """
-    Returns the n most common words in the selected user's messages or overall chat.
-    """
-    if selected_user != "Overall":
-        df = df[df["user"] == selected_user]
-
-    messages = df[df["message_content"] != "<Media omitted>"]["message_content"]
-
-    dynamic_stopwords = identify_dynamic_stopwords(df, threshold=dynamic_threshold)
-    words = remove_stopwords(messages, dynamic_stopwords)
-
-    if not words:
-        return pd.DataFrame(columns=["Word", "Count"])
-
-    most_common = Counter(words).most_common(n)
-    return pd.DataFrame(most_common, columns=["Word", "Count"])
-
-
-def plot_most_common_words_interactive(selected_user, df, n=10, dynamic_threshold=0.01):
-    """
-    Plot an interactive bar chart of the n most common words.
-    """
-    common_words_df = most_common_words(selected_user, df, n, dynamic_threshold)
-
-    if common_words_df.empty:
-        return None, pd.DataFrame()
-
-    # Create an interactive bar chart
-    fig = px.bar(
-        common_words_df,
-        x="Word",
-        y="Count",
-        title="Most Common Words",
-        text="Count",
-        color="Count",
-        color_continuous_scale="Viridis",
-    )
-    fig.update_traces(textposition="outside")
-    fig.update_layout(title_x=0.5, template="plotly_dark")
-
-    return fig, common_words_df
-
-
-
 def extract_emojis(message):
     """
     Extract all emojis from a single message.
@@ -232,6 +115,7 @@ def plot_monthly_timeline(selected_user, df):
     fig.update_layout(title_x=0.5, plot_bgcolor='black', paper_bgcolor='black', font=dict(color='white'))
 
     return fig, monthly_counts
+
 
 def plot_daily_timeline(selected_user, df):
     """
@@ -298,6 +182,7 @@ def plot_interactive_activity_analysis(df, selected_user):
 
     return fig1, fig2
 
+
 def plot_activity_heatmap_matplotlib(df):
     """
     Create a heatmap showing message activity by day of the week and hour of the day using matplotlib.
@@ -323,8 +208,8 @@ def plot_activity_heatmap_matplotlib(df):
     fig.colorbar(cax)
 
     # Set axis labels
-    ax.set_xticks(np.arange(len(heatmap_data.columns)))
-    ax.set_yticks(np.arange(len(heatmap_data.index)))
+    ax.set_xticks(range(len(heatmap_data.columns)))
+    ax.set_yticks(range(len(heatmap_data.index)))
     ax.set_xticklabels(heatmap_data.columns, rotation=90)
     ax.set_yticklabels(heatmap_data.index)
 
