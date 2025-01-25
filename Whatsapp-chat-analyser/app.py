@@ -9,8 +9,12 @@ def load_css(css_file_path):
     """
     Load external CSS for styling the Streamlit app.
     """
-    with open(css_file_path) as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    try:
+        with open(css_file_path) as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    except FileNotFoundError:
+        st.error(f"CSS file '{css_file_path}' not found. Please ensure it exists in the correct directory.")
+
 
 # Load external CSS
 load_css("styles.css")
