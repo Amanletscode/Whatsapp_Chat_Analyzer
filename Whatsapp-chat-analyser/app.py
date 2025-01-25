@@ -4,16 +4,20 @@ from preprocessor import preprocess
 import helper
 from helper import plot_activity_heatmap_matplotlib
 
+
 # Function to load external CSS for styling
+import os
+
 def load_css(css_file_path):
     """
     Load external CSS for styling the Streamlit app.
     """
+    full_path = os.path.join(os.path.dirname(__file__), css_file_path)
     try:
-        with open(css_file_path) as f:
+        with open(full_path, "r", encoding="utf-8") as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
     except FileNotFoundError:
-        st.error(f"CSS file '{css_file_path}' not found. Please ensure it exists in the correct directory.")
+        st.error(f"CSS file '{full_path}' not found. Please ensure it exists.")
 
 
 # Load external CSS
